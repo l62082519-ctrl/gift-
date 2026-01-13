@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise for My Love</title>
+    <style>
+        :root {
+            --primary-pink: #ffb7c5;
+            --accent-pink: #ff4d6d;
+            --bg-pink: #fff0f3;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-pink);
+            color: #4a4a4a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .hidden { display: none; }
+
+        button {
+            background-color: var(--accent-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        button:hover { transform: scale(1.05); }
+
+        /* Memory Game Styles */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card {
+            height: 80px;
+            background: var(--primary-pink);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            color: transparent;
+        }
+
+        .card.flipped { color: white; background: var(--accent-pink); }
+
+        /* Reasons Section */
+        .reason-item {
+            background: var(--bg-pink);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            border-left: 4px solid var(--accent-pink);
+        }
+
+        .reason-text { display: none; font-size: 0.9rem; margin-top: 5px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div id="landing" class="container">
+        <h1 style="color: var(--accent-pink);">Hi my love</h1>
+        <p>I made this just for you!</p>
+        <p>Play a little game to unlock your surprises</p>
+        <button onclick="showSection('game-section')">Start Game ➔</button>
+    </div>
+
+    <div id="game-section" class="container hidden">
+        <h2>Match the Pairs!</h2>
+        <div class="grid" id="game-grid"></div>
+        <button id="continue-btn" class="hidden" onclick="showSection('reasons-section')">Continue ➔</button>
+    </div>
+
+    <div id="reasons-section" class="container hidden">
+        <h2 style="color: var(--accent-pink);">Reasons Why I Love You</h2>
+        <div class="reason-item" onclick="toggleReason(this)">
+            <strong>❤️ Your Dedication</strong>
+            <div class="reason-text">You never give up, even when things get hard.</div>
+        </div>
+        <div class="reason-item" onclick="toggleReason(this)">
+            <strong>❤️ Your Tenderness</strong>
+            <div class="reason-text">You make me feel loved every single day.</div>
+        </div>
+        <div class="reason-item" onclick="toggleReason(this)">
+            <strong>❤️ Your Humor</strong>
+            <div class="reason-text">You always know how to make me laugh.</div>
+        </div>
+        <button onclick="alert('Happy Birthday to the person who owns my heart! I love you forever.')">The Final Message</button>
+    </div>
+
+    <script>
+        function showSection(id) {
+            document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'game-section') initGame();
+        }
+
+        function toggleReason(el) {
+            const text = el.querySelector('.reason-text');
+            text.style.display = text.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Simple Game Logic
+        const emojis = ['💖', '💖', '✨', '✨', '🌹', '🌹'];
+        let flippedCards = [];
+        let matchedCount = 0;
+
+        function initGame() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = '';
+            emojis.sort(() => Math.random() - 0.5).forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.emoji = emoji;
+                card.innerText = emoji;
+                card.onclick = () => flipCard(card);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+                card.classList.add('flipped');
+                flippedCards.push(card);
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 500);
+                }
+            }
+        }
+
+        function checkMatch() {
+            if (flippedCards[0].dataset.emoji === flippedCards[1].dataset.emoji) {
+                matchedCount += 2;
+                if (matchedCount === emojis.length) {
+                    document.getElementById('continue-btn').classList.remove('hidden');
+                }
+            } else {
+                flippedCards.forEach(c => c.classList.remove('flipped'));
+            }
+            flippedCards = [];
+        }
+    </script>
+</body>
+</html>
